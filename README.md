@@ -1,9 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# shiny-template
-
-Rename the above to something more meaningful.
+# Indoor Air Pollution
 
 ## PRACHI JAISWAL <br> 32192673
 
@@ -12,18 +10,21 @@ application for assessment 2. You will need the following packages
 installed to generate the gadget from this template:
 
 ``` r
-install.packages(c("shiny", "crosstalk", "plotly", 
+install.packages(c("shiny", "crosstalk", "plotly", "ggthemes",
                    "DT", "tidyverse", "here", "shinythemes"))
 ```
 
 ## How to run the app
 
-Describe how to run the gadget and use it here. Include any additional
-comments and list any additional packages required to run the gadget.
+-   Load all the packages mentioned in the `README.rmd`.
+-   Run the libraries given in `app.R`.
+-   Run the app with `Run App` button given at the to right corner of
+    `app.R`.
+
+**NOTE:** If you face any issues, you can connect with me through
+[GitHub](https://github.com/pjai0005).
 
 ## Session Info
-
-Add the session info here.
 
 ``` r
 #use utils::sessionInfo() or 
