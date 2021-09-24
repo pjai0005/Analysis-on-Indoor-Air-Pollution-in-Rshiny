@@ -70,15 +70,11 @@ ui <- fluidPage(
     #tab2
     tabPanel("table", dataTableOutput("table"),
              icon = icon("table"),
-             fluidRow( offset = 1, tags$br(), tags$br(),
-                       tags$h1("Data Table"),
-                       tags$br(), tags$br()),
-             fluidRow(column(
-               2,
-               offset = 1,
+             fluidRow(column(6, offset = 5,
                radioButtons("tab", "Variables:",
                                    c("Fuel Comsumption" = "cooking" ,
-                                     "GDP Per Capita" ="gdp_per_capita"),
+                                     "GDP Per Capita" ="gdp_per_capita",
+                                     "Total Population" = "total_population"),
                                    selected = "cooking"
              ) ) ),
 
@@ -109,7 +105,7 @@ server <- function(input, output, session)
 {
   # Define reactive expressions here for filtering data
 
-  # Define outputs here
+  # Graph
 
       output$chart <- renderPlotly({
 
@@ -175,63 +171,72 @@ server <- function(input, output, session)
   })
 
 
+      # TABLE
+
   output$table <- renderDataTable({
 
     if(input$tab == "cooking"){
 
       tidy_fuels %>%
         filter(year == input$Year[1] | year == input$Year[2]) %>%
-        select(-c(code, continent, gdp_per_capita, total_population)) %>%
+        select(-c(code, continent, gdp_per_capita, total_population, tooltip)) %>%
         pivot_wider(names_from = year ,
                     values_from = cooking) %>%
-        mutate(Relative = (.[[3]] - .[[2]])/.[[2]]*100 ) %>%
+        mutate("Absolute Change %" = .[[3]] - .[[2]],
+               "Relative Change %" = (.[[3]] - .[[2]])/.[[2]]*100 ) %>%
 
-        #select(country, total_population, input$Year[1], input$Year[2], Relative) %>%
+       datatable(escape = FALSE,
+                  caption = htmltools::tags$caption (style = 'caption-side: top; text-align: center;
+                                                              color: black; font-family: Arial;
+                                                              font-size: 150% ;', 'Relative Change in Fule Consumption'))%>%
+
+        formatRound("Absolute Change %", digits = 2) %>%
+        formatRound("Relative Change %", digits = 2)}
+
+
+
+    else if(input$tab == "gdp_per_capita"){
+      tidy_fuels %>%
+        filter(year == input$Year[1] | year == input$Year[2]) %>%
+        select(-c(code, continent, cooking, total_population, tooltip)) %>%
+        pivot_wider(names_from = year ,
+                    values_from = gdp_per_capita) %>%
+        mutate("Absolute Change %" = .[[3]] - .[[2]],
+               "Relative Change %" = (.[[3]] - .[[2]])/.[[2]]*100 ) %>%
+
         datatable(escape = FALSE,
                   caption = htmltools::tags$caption (style = 'caption-side: top; text-align: center;
                                                               color: black; font-family: Arial;
-                                                              font-size: 150% ;', 'Relative Change in Fule Consumption')) %>%
-        formatRound('Relative', digits = 2) }
+                                                              font-size: 150% ;', 'Realtive Change in GDP per capita'))%>%
 
+        formatRound("Absolute Change %", digits = 2) %>%
+        formatRound("Relative Change %", digits = 2)}
 
 
     else{
-      tidy_fuels %>%
-        filter(year == input$Year[1] | year == input$Year[2]) %>%
-        select(-c(code, continent, cooking, total_population)) %>%
-        pivot_wider(names_from = year ,
-                    values_from = gdp_per_capita) %>%
-        mutate(Relative = (.[[3]] - .[[2]])/.[[2]]*100 ) %>%
+        tidy_fuels %>%
+          filter(year == input$Year[1] | year == input$Year[2]) %>%
+          select(-c(code, continent, cooking, gdp_per_capita, tooltip)) %>%
+          pivot_wider(names_from = year ,
+                      values_from = total_population) %>%
+        mutate("Absolute Change %" = .[[3]] - .[[2]],
+               "Relative Change %" = (.[[3]] - .[[2]])/.[[2]]*100 ) %>%
 
-        #select(country, total_population, input$Year[1], input$Year[2], Relative)%>%
         datatable(escape = FALSE,
-                  caption = htmltools::tags$caption (style = 'caption-side: top; text-align: center;
-                                                              color: black; font-family: Arial;
-                                                              font-size: 150% ;', 'Realtive Change in GDP per capita')) %>%
-        formatRound('Relative', digits = 2) }
+                    caption = htmltools::tags$caption (style = 'caption-side: top; text-align: center;
+                                                                  color: black; font-family: Arial;
+                                                                  font-size: 150% ;', 'Realtive Change in Total Population')) %>%
 
-
-
-    # else{
-    #     tidy_fuels %>%
-    #       filter(year == input$Year[1] | year == input$Year[2]) %>%
-    #       select(-c(code, continent, cooking, gdp_per_capita)) %>%
-    #       pivot_wider(names_from = year ,
-    #                   values_from = total_population) %>%
-    #       mutate(Absolute = .[[3]] - .[[2]],
-    #              Relative = (.[[3]] - .[[2]])/.[[2]]*100 ) %>%
-    #       datatable(escape = FALSE,
-    #                 caption = htmltools::tags$caption (style = 'caption-side: top; text-align: center;
-    #                                                               color: black; font-family: Arial;
-    #                                                               font-size: 150% ;', 'GDP vs cooking')) %>%
-    #       formatRound('Absolute', digits = 2) %>%
-    #       formatRound('Relative', digits = 2)}
-
-
+        formatRound("Absolute Change %", digits = 2) %>%
+        formatRound("Relative Change %", digits = 2)}
 
 
 
   })
+
+
+
+  # About
 
 
   url <- a("Our world in Data", href="https://ourworldindata.org/grapher/access-to-clean-fuels-for-cooking-vs-gdp-per-capita")
