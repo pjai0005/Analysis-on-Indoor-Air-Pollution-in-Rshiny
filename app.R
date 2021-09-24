@@ -5,6 +5,7 @@ library(plotly)
 library(here)
 library(shinythemes)
 
+
 # once you've prepared the data uncomment this line
 tidy_fuels <- read_csv(here("data", "cooking.csv"))
 
@@ -20,9 +21,10 @@ tidy_fuels$tooltip <-
 # UI
 
 
-ui <- fluidPage(
-  title = "Indoor Air Pollution",
-  theme = shinytheme("united"),
+ui <- fluidPage( navbarPage(title = "Indoor Air Pollution",
+                            windowTitle ="Indoor Air Pollution",
+                            id="tabactive",
+  theme = shinytheme("flatly")),
   tabsetPanel(
 
     #tab1
@@ -185,11 +187,10 @@ server <- function(input, output, session)
         mutate("Absolute Change %" = .[[3]] - .[[2]],
                "Relative Change %" = (.[[3]] - .[[2]])/.[[2]]*100 ) %>%
 
-       datatable(escape = FALSE,
+       datatable(escape = FALSE, class = 'cell-border stripe',
                   caption = htmltools::tags$caption (style = 'caption-side: top; text-align: center;
                                                               color: black; font-family: Arial;
                                                               font-size: 150% ;', 'Relative Change in Fule Consumption'))%>%
-
         formatRound("Absolute Change %", digits = 2) %>%
         formatRound("Relative Change %", digits = 2)}
 
@@ -204,7 +205,7 @@ server <- function(input, output, session)
         mutate("Absolute Change %" = .[[3]] - .[[2]],
                "Relative Change %" = (.[[3]] - .[[2]])/.[[2]]*100 ) %>%
 
-        datatable(escape = FALSE,
+        datatable(escape = FALSE, class = 'cell-border stripe',
                   caption = htmltools::tags$caption (style = 'caption-side: top; text-align: center;
                                                               color: black; font-family: Arial;
                                                               font-size: 150% ;', 'Realtive Change in GDP per capita'))%>%
@@ -222,7 +223,7 @@ server <- function(input, output, session)
         mutate("Absolute Change %" = .[[3]] - .[[2]],
                "Relative Change %" = (.[[3]] - .[[2]])/.[[2]]*100 ) %>%
 
-        datatable(escape = FALSE,
+        datatable(escape = FALSE, class = 'cell-border stripe',
                     caption = htmltools::tags$caption (style = 'caption-side: top; text-align: center;
                                                                   color: black; font-family: Arial;
                                                                   font-size: 150% ;', 'Realtive Change in Total Population')) %>%
